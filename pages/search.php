@@ -77,7 +77,7 @@
                     <td><?= $emp['dept_name'] ?></td>
                 </tr>
             <?php } ?>
-            </tbody>
+        </tbody>
         </table>
     <?php } ?>
 </div>

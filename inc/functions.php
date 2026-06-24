@@ -26,8 +26,9 @@ function get_one_line($sql){
     return $result;
 }
 
-function get_all_departments()
+function get_all_departments($tri = 'ASC')
 {
+    $tri = $tri === 'DESC' ? 'DESC' : 'ASC';
     $sql = "SELECT d.dept_no,
                    d.dept_name,
                    CONCAT(e.first_name, ' ', e.last_name) AS manager_name,
@@ -41,7 +42,7 @@ function get_all_departments()
                   AND dm.to_date = '9999-01-01'
             LEFT JOIN employees e
                    ON e.emp_no = dm.emp_no
-            ORDER BY d.dept_no";
+            ORDER BY d.dept_name $tri";
     return get_all_lines($sql);
 }
 

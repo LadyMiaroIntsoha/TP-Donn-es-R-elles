@@ -1,7 +1,10 @@
 <?php
     include('../inc/functions.php');
-    $departments = get_all_departments();
-
+    $tri = isset($_GET['tri']) && $_GET['tri'] === 'DESC' ? 'DESC' : 'ASC';
+    $tri_suivant = $tri === 'ASC' ? 'DESC' : 'ASC';
+    $tri_icone = $tri === 'ASC' ? '↑' : '↓';
+    $tri_legende = $tri === 'ASC' ? 'décroissant' : 'croissant';
+    $departments = get_all_departments($tri);
 ?>		
 <html>
     <head>
@@ -20,6 +23,9 @@
 
             <div class="container">
                 <h1>Liste des départements</h1>
+                <div class =" btn btn-secondary mt"><a href="index.php?tri=<?php echo $tri_suivant;?>">Mettre en ordre <?php echo $tri_legende;?>
+                    <?php echo $tri_icone;?>
+                </a> </div>
         <table border="1" class="table">
             <thead>
                 <tr>
