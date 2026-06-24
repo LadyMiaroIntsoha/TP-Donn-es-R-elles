@@ -28,35 +28,53 @@
 ?>
 <html>
     <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="../assets/css/style.css">
         <title>Devenir manager</title>
     </head>
     <body>
-    <p><a href="fiche.php?emp_no=<?= urlencode($emp_no) ?>">&larr; Retour à la fiche</a></p>
-
-    <?php if (!$employee) { ?>
-        <h1>Employé introuvable</h1>
-    <?php } elseif (!$current_dept) { ?>
-        <h1>Cet employé n'a pas de département actuel.</h1>
-    <?php } else { ?>
-        <h1><?= $employee['first_name'] ?> <?= $employee['last_name'] ?> — devenir manager de <?= $current_dept['dept_name'] ?></h1>
-
-        <?php if ($success) { ?>
-            <p style="color:green;">C'est fait : l'employé est désormais le manager du département.
-               <a href="index.php">Vérifier dans la liste des départements &rarr;</a></p>
-        <?php } ?>
-        <?php if ($error !== '') { ?>
-            <p style="color:red;"><?= htmlspecialchars($error) ?></p>
-        <?php } ?>
-
-        <!-- b. Manager en cours affiché en haut -->
-        <p><strong>Manager en cours :</strong>
-            <?= $manager ? $manager['manager_name'] . ' (depuis le ' . $manager['from_date'] . ')' : 'aucun' ?>
-        </p>
-
-        <form method="post" action="become_manager.php?emp_no=<?= urlencode($emp_no) ?>">
-            <p>Date de début : <input type="date" name="from_date"></p>
-            <p><input type="submit" value="Devenir manager"></p>
-        </form>
-    <?php } ?>
+        <nav class="navbar">
+            <ul>
+                <li><a href="index.php">&larr; Retour aux départements</a></li>
+                <li><a href="search.php">🔍 Rechercher un employé</a></li>
+                <li><a href="stats.php">📊 Statistiques par emploi</a></li>
+                <li><a href="dept_form.php">➕ Ajouter un département</a></li>
+                <li><a href="emp_form.php">➕ Ajouter un employé</a></li>
+            </ul>
+        </nav>
+ 
+        <div class="container">
+            <?php if (!$employee) { ?>
+                <h1 class="mt">Employé introuvable</h1>
+            <?php } elseif (!$current_dept) { ?>
+                <h1 class="mt">Cet employé n'a pas de département actuel.</h1>
+            <?php } else { ?>
+                <h1 class="mt"><?= $employee['first_name'] ?> <?= $employee['last_name'] ?> — devenir manager de <?= $current_dept['dept_name'] ?></h1>
+ 
+                <?php if ($success) { ?>
+                    <div class="alert alert-success">C'est fait : l'employé est désormais le manager du département.
+                        <a href="index.php">Vérifier dans la liste des départements &rarr;</a>
+                    </div>
+                <?php } ?>
+                <?php if ($error !== '') { ?>
+                    <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
+                <?php } ?>
+ 
+                <div class="card">
+                    <p><strong>Manager en cours :</strong>
+                        <?= $manager ? $manager['manager_name'] . ' (depuis le ' . $manager['from_date'] . ')' : 'aucun' ?>
+                    </p>
+                    <form method="post" action="become_manager.php?emp_no=<?= urlencode($emp_no) ?>">
+                        <div class="form-group">
+                            <label>Date de début :</label>
+                            <input class="form-control" type="date" name="from_date">
+                        </div>
+                        <button type="submit" class="btn">Devenir manager</button>
+                        <a href="fiche.php?emp_no=<?= urlencode($emp_no) ?>" class="btn btn-secondary">Annuler</a>
+                    </form>
+                </div>
+            <?php } ?>
+        </div>
     </body>
 </html>
+

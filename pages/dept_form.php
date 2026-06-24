@@ -35,29 +35,45 @@
 ?>
 <html>
     <head>
+        <meta charset="utf-8">
+       <link rel="stylesheet" href="../assets/css/style.css">
         <title><?= $editing ? "Modifier" : "Ajouter" ?> un département</title>
     </head>
     <body>
-    <p><a href="index.php">&larr; Retour aux départements</a></p>
-    <h1><?= $editing ? "Modifier le département $dept_no" : "Ajouter un département" ?></h1>
+        <nav class="navbar">
+            <ul>
+            <li><a href="index.php">&larr; Retour aux départements</a></li>
+            <li><a href="search.php" >🔍 Rechercher un employé</a></li>
+            <li><a href="stats.php">📊 Statistiques par emploi</a></li>
+            <li><a href="dept_form.php" class="active">➕ Ajouter un département</a></li>
+            <li><a href="emp_form.php">➕ Ajouter un employé</a></li>
+            </ul>
+        </nav>
+    <div class="container">
+    <h2 class="mt"><?= $editing ? "Modifier le département $dept_no" : "Ajouter un département" ?></h2>
 
     <?php if ($success) { ?>
-        <p style="color:green;">Enregistré.</p>
+        <div class="alert alert-success">Enregistrement effectué avec succès.</div>
     <?php } ?>
     <?php if ($error !== '') { ?>
-        <p style="color:red;"><?= htmlspecialchars($error) ?></p>
+        <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
     <?php } ?>
 
+    <div class="card">
     <form method="post" action="dept_form.php<?= $editing ? '?dept_no=' . urlencode($dept_no) : '' ?>">
+        
         <input type="hidden" name="mode" value="<?= $editing ? 'edit' : 'add' ?>">
-        <p>
-            Numéro (4 car. max) :
-            <input type="text" name="dept_no" maxlength="4"
+        <div class="form-group">
+           <label for="dept_no">Numéro (4 car. max) : </label> 
+            <input class="form-control" type="text" name="dept_no" maxlength="4"
                    value="<?= htmlspecialchars($dept_no) ?>"
                    <?= $editing ? 'readonly' : '' ?>>
-        </p>
-        <p>Nom : <input type="text" name="dept_name" value="<?= htmlspecialchars($dept_name) ?>"></p>
-        <p><input type="submit" value="<?= $editing ? 'Modifier' : 'Ajouter' ?>"></p>
+        </div>
+        <div class="form-group">
+        <label for="dept_name">Nom :</label> <input class="form-control" type="text" name="dept_name" value="<?= htmlspecialchars($dept_name) ?>">
+        </div>
+        <button type="submit" class="btn"><?= $editing ? 'Modifier' : 'Ajouter' ?></button>
     </form>
+    </div>
     </body>
 </html>
