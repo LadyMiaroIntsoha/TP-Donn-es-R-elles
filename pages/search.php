@@ -12,6 +12,18 @@
     // On ne lance la recherche que si le formulaire a été soumis
     $submitted = isset($_GET['dept_no']);
     $results   = $submitted ? search_employees($dept_no, $name, $age_min, $age_max) : array();
+    $all_results = $submitted ? search_all_employees($dept_no, $name, $age_min, $age_max) : array();
+    $all_males = 0;
+    $all_females = 0;
+    if ($submitted) {
+        foreach ($all_results as $emp) {
+            if ($emp['gender'] === 'M') {
+                $all_males++;
+            } else {
+                $all_females++;
+            }
+        }
+    }
 ?>
 <html>
     <head>
@@ -27,6 +39,7 @@
             <li><a href="stats.php">📊 Statistiques par emploi</a></li>
             <li><a href="dept_form.php">➕ Ajouter un département</a></li>
             <li><a href="emp_form.php">➕ Ajouter un employé</a></li>
+            <li><a href="augmenter_salaire.php">💰 Augmenter les salaires</a></li>
             </ul>
         </nav>
 
@@ -55,6 +68,7 @@
 
     <?php if ($submitted) { ?>
         <h2 class="mt"><?= count($results) ?> résultat(s)<?= count($results) === 200 ? ' (limité à 200)' : '' ?></h2>
+        <p class="mt">Tous les résultats sont au nombre de <?= count($all_results) ?> avec <?= $all_males ?> hommes et <?= $all_females ?> femmes</p>
         <table class="table border="1">
             <thead>
             <tr>

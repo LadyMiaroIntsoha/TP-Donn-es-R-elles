@@ -35,6 +35,7 @@
                 <li><a href="stats.php">📊 Statistiques par emploi</a></li>
                 <li><a href="dept_form.php">➕ Ajouter un département</a></li>
                 <li><a href="emp_form.php">➕ Ajouter un employé</a></li>
+                <li><a href="augmenter_salaire.php">💰 Augmenter les salaires</a></li>
             </ul>
         </nav>
  
@@ -50,6 +51,7 @@
                             <th>Prénom</th>
                             <th>Nom</th>
                             <th>Genre</th>
+                            <th>Numéro de Téléphone</th>
                             <th>Date d'embauche</th>
                         </tr>
                     </thead>
@@ -60,6 +62,7 @@
                                 <td><?= $emp['first_name'] ?></td>
                                 <td><?= $emp['last_name'] ?></td>
                                 <td><?= $emp['gender'] ?></td>
+                                <td><?= $emp['phone'] ?></td>
                                 <td><?= $emp['hire_date'] ?></td>
                             </tr>
                         <?php } ?>

@@ -83,3 +83,8 @@ h1 { font-size: 1.6rem; }
 .text-muted { color: var(--color-muted); }
 .mt { margin-top: var(--space); }
 .mb { margin-bottom: var(--space); }
+
+table.table td.rouge {background-color: var(--color-error);}
+table.table td.vert {background-color: var(--color-success);}
+
+p.vert {background-color: var(--color-success);}

@@ -18,6 +18,7 @@
     $birth_date = $existing['birth_date'] ?? '';
     $hire_date  = $existing['hire_date']  ?? '';
     $dept_no    = $existing['dept_no']    ?? '';
+    $phone      = $existing['phone']      ?? '';
 
     // Est-il déjà le manager de son département actuel ?
     $mgr = $dept_no ? get_current_manager($dept_no) : null;
@@ -32,11 +33,12 @@
         $birth_date = $_POST['birth_date'] ?? '';
         $hire_date  = $_POST['hire_date'] ?? '';
         $dept_no    = $_POST['dept_no'] ?? '';
+        $phone      = trim($_POST['phone'] ?? '');
         $is_manager = isset($_POST['is_manager']);   // la case n'est envoyée que si cochée
 
         // Validation
         if ($emp_no === '' || $first_name === '' || $last_name === ''
-            || $birth_date === '' || $hire_date === '' || $dept_no === '') {
+            || $birth_date === '' || $hire_date === '' || $dept_no === '' || $phone === '') {
             $error = "Tous les champs sont obligatoires (sauf la case manager).";
         } elseif ($mode === 'add' && get_one_employee($emp_no)) {
             $error = "Un employé avec le numéro '$emp_no' existe déjà.";
@@ -44,14 +46,14 @@
             $today = date('Y-m-d');
 
             if ($mode === 'edit') {
-                update_employee($emp_no, $birth_date, $first_name, $last_name, $gender, $hire_date);
+                update_employee($emp_no, $birth_date, $first_name, $last_name, $gender, $hire_date, $phone);
                 // Département : on ne change que s'il a été modifié (date d'effet = aujourd'hui)
                 $current = get_current_department($emp_no);
                 if (!$current || $current['dept_no'] !== $dept_no) {
                     change_department($emp_no, $dept_no, $today);
                 }
             } else {
-                add_employee($emp_no, $birth_date, $first_name, $last_name, $gender, $hire_date);
+                add_employee($emp_no, $birth_date, $first_name, $last_name, $gender, $hire_date, $phone);
                 // Nouveau salarié : on l'affecte à son département (date d'effet = date d'embauche)
                 change_department($emp_no, $dept_no, $hire_date);
             }
@@ -84,6 +86,7 @@
                 <li><a href="stats.php">📊 Statistiques par emploi</a></li>
                 <li><a href="dept_form.php">➕ Ajouter un département</a></li>
                 <li><a href="emp_form.php" class="active">➕ Ajouter un employé</a></li>
+                <li><a href="augmenter_salaire.php">💰 Augmenter les salaires</a></li>
             </ul>
         </nav>
  
@@ -122,6 +125,10 @@
                             <option value="M" <?= $gender === 'M' ? 'selected' : '' ?>>M</option>
                             <option value="F" <?= $gender === 'F' ? 'selected' : '' ?>>F</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Numéro de Téléphone :</label>
+                        <input class="form-control" type="text" name="phone" value="<?= htmlspecialchars($phone) ?>">
                     </div>
                     <div class="form-group">
                         <label>Date de naissance :</label>

@@ -68,6 +68,16 @@ function get_jobs_stats()
     return get_all_lines($sql);
 }
 
+function get_salaire_moyen_général(){
+
+    $sql = "SELECT AVG(s.salary) as salaire_moyenne_générale
+            FROM salaries s";
+    $req = mysqli_query(dbconnect(), $sql);
+    $row = mysqli_fetch_assoc($req);
+    mysqli_free_result($req);
+    return $row['salaire_moyenne_générale'];
+}
+
 // Exécute une requête qui ne renvoie pas de résultat (INSERT, UPDATE, DELETE)
 function execute_query($sql)
 {
@@ -174,21 +184,21 @@ function update_department($dept_no, $dept_name)
     execute_query($sql);
 }
 
-function add_employee($emp_no, $birth_date, $first_name, $last_name, $gender, $hire_date)
+function add_employee($emp_no, $birth_date, $first_name, $last_name, $gender, $hire_date, $phone='')
 {
-    $sql = "INSERT INTO employees (emp_no, birth_date, first_name, last_name, gender, hire_date)
-            VALUES ('%s', '%s', '%s', '%s', '%s', '%s')";
-    $sql = sprintf($sql, $emp_no, $birth_date, $first_name, $last_name, $gender, $hire_date);
+    $sql = "INSERT INTO employees (emp_no, birth_date, first_name, last_name, gender, hire_date, phone)
+        VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')";
+    $sql = sprintf($sql, $emp_no, $birth_date, $first_name, $last_name, $gender, $hire_date, $phone);
     execute_query($sql);
 }
 
-function update_employee($emp_no, $birth_date, $first_name, $last_name, $gender, $hire_date)
+function update_employee($emp_no, $birth_date, $first_name, $last_name, $gender, $hire_date, $phone='')
 {
     $sql = "UPDATE employees
             SET birth_date = '%s', first_name = '%s', last_name = '%s',
-                gender = '%s', hire_date = '%s'
+                gender = '%s', hire_date = '%s', phone='%s'
             WHERE emp_no = '%s'";
-    $sql = sprintf($sql, $birth_date, $first_name, $last_name, $gender, $hire_date, $emp_no);
+    $sql = sprintf($sql, $birth_date, $first_name, $last_name, $gender, $hire_date, $phone, $emp_no);
     execute_query($sql);
 }
 
@@ -219,6 +229,7 @@ function get_employees_by_department($dept_no, $limit, $offset)
                    e.first_name,
                    e.last_name,
                    e.gender,
+                   e.phone,
                    e.hire_date
             FROM employees e
             INNER JOIN dept_emp de
@@ -252,6 +263,7 @@ function get_one_employee($emp_no)
                    e.gender,
                    e.birth_date,
                    e.hire_date,
+                   e.phone,
                    d.dept_no,
                    d.dept_name,
                    t.title,
@@ -268,6 +280,17 @@ function get_one_employee($emp_no)
             WHERE e.emp_no = '%s'";
     $sql = sprintf($sql, $emp_no);
     return get_one_line($sql);
+}
+
+function get_hire_age($emp_no)
+{
+    // ⚠️ sprintf n'échappe pas : injection SQL toujours possible (à sécuriser avec une requête préparée).
+    $sql = "SELECT TIMESTAMPDIFF(YEAR, e.birth_date, e.hire_date) AS hire_age
+            FROM employees e
+            WHERE e.emp_no = '%s'";
+    $sql = sprintf($sql, $emp_no);
+    $line = get_one_line($sql);
+    return (int)$line['hire_age'];
 }
 
 function get_longest_title($emp_no)
@@ -340,6 +363,46 @@ function search_employees($dept_no, $name, $age_min, $age_max)
     return get_all_lines($sql);
 }
 
+function search_all_employees($dept_no, $name, $age_min, $age_max)
+{
+    // ⚠️ sprintf n'échappe pas : injection SQL toujours possible (à sécuriser avec une requête préparée).
+    // On construit la clause WHERE dynamiquement selon les champs remplis.
+    $conditions = array();
+
+    if ($dept_no !== '') {
+        $conditions[] = sprintf("de.dept_no = '%s'", $dept_no);
+    }
+    if ($name !== '') {
+        // %% produit un % littéral dans sprintf → '%nom%' pour le LIKE
+        $conditions[] = sprintf("(e.first_name LIKE '%%%s%%' OR e.last_name LIKE '%%%s%%')", $name, $name);
+    }
+    if ($age_min !== '') {
+        $conditions[] = sprintf("TIMESTAMPDIFF(YEAR, e.birth_date, CURDATE()) >= %d", $age_min);
+    }
+    if ($age_max !== '') {
+        $conditions[] = sprintf("TIMESTAMPDIFF(YEAR, e.birth_date, CURDATE()) <= %d", $age_max);
+    }
+
+    // S'il n'y a aucun filtre, "1=1" garde une clause WHERE valide.
+    $where = empty($conditions) ? '1=1' : implode(' AND ', $conditions);
+
+    $sql = "SELECT DISTINCT
+                   e.emp_no,
+                   e.first_name,
+                   e.last_name,
+                   e.gender,
+                   TIMESTAMPDIFF(YEAR, e.birth_date, CURDATE()) AS age,
+                   d.dept_name
+            FROM employees e
+            INNER JOIN dept_emp de
+                    ON de.emp_no = e.emp_no AND de.to_date = '9999-01-01'
+            INNER JOIN departments d
+                    ON d.dept_no = de.dept_no
+            WHERE $where
+            ORDER BY e.last_name, e.first_name";
+    return get_all_lines($sql);
+}
+
 function get_title_history($emp_no)
 {
     // ⚠️ sprintf n'échappe pas : injection SQL toujours possible (à sécuriser avec une requête préparée).
@@ -349,4 +412,13 @@ function get_title_history($emp_no)
             ORDER BY from_date DESC";
     $sql = sprintf($sql, $emp_no);
     return get_all_lines($sql);
+}
+
+function raise_salaries($raise){
+    $sql="UPDATE salaries 
+        SET salary = salary * (1 + $raise/100) 
+        WHERE to_date = '9999-01-01'";
+    $sql=sprintf($sql, (int) $raise);
+    execute_query($sql);
+    
 }

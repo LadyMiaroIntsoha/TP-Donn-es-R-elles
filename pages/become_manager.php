@@ -40,6 +40,7 @@
                 <li><a href="stats.php">📊 Statistiques par emploi</a></li>
                 <li><a href="dept_form.php">➕ Ajouter un département</a></li>
                 <li><a href="emp_form.php">➕ Ajouter un employé</a></li>
+                <li><a href="augmenter_salaire.php">💰 Augmenter les salaires</a></li>
             </ul>
         </nav>
  

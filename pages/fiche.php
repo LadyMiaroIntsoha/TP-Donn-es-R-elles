@@ -11,6 +11,7 @@
     $salary_history = get_salary_history($emp_no);
     $title_history  = get_title_history($emp_no);
     $longest_title  = get_longest_title($emp_no);
+    $hire_age = get_hire_age($emp_no);
 ?>
 <html>
     <head>
@@ -26,6 +27,7 @@
                 <li><a href="stats.php">📊 Statistiques par emploi</a></li>
                 <li><a href="dept_form.php">➕ Ajouter un département</a></li>
                 <li><a href="emp_form.php">➕ Ajouter un employé</a></li>
+                <li><a href="augmenter_salaire.php">💰 Augmenter les salaires</a></li>
             </ul>
         </nav>
  
@@ -46,8 +48,10 @@
                         <tr><th>Prénom</th>            <td><?= $employee['first_name'] ?></td></tr>
                         <tr><th>Nom</th>               <td><?= $employee['last_name'] ?></td></tr>
                         <tr><th>Genre</th>             <td><?= $employee['gender'] ?></td></tr>
+                        <tr><th>Numéro de Téléphone</th><td><?= $employee['phone'] ?></td></tr>
                         <tr><th>Date de naissance</th> <td><?= $employee['birth_date'] ?></td></tr>
                         <tr><th>Date d'embauche</th>   <td><?= $employee['hire_date'] ?></td></tr>
+                        <tr><th>Âge au moment de l'embauche</th><td><?= $hire_age ?></td></tr>
                         <tr><th>Poste actuel</th>      <td><?= $employee['title'] ?? '—' ?></td></tr>
                         <tr><th>Département</th>       <td><?= $employee['dept_name'] ?? '—' ?></td></tr>
                         <tr><th>Salaire actuel</th>    <td><?= isset($employee['salary']) ? number_format($employee['salary'], 0, ',', ' ') . ' €' : '—' ?></td></tr>
